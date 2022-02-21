@@ -14,10 +14,8 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const signers = await ethers.getSigners();
-  const minter = signers[0].address;
   const LazyNFT = await ethers.getContractFactory("LazyNFT");
-  const lazyNFT = await LazyNFT.deploy(minter);
+  const lazyNFT = await LazyNFT.deploy();
 
   await lazyNFT.deployed();
 

@@ -3,24 +3,27 @@ pragma solidity ^0.8.0;
 pragma abicoder v2; // required to accept structs as function parameters
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 
-contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
+contract LazyNFT is ERC721URIStorage, EIP712, AccessControl, Ownable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     string private constant SIGNING_DOMAIN = "LazyNFT-Voucher";
     string private constant SIGNATURE_VERSION = "1";
 
     mapping(address => uint256) public pendingWithdrawals;
 
-    constructor(address payable minter)
-        ERC721("LazyNFT", "LAZ")
-        EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION)
-    {
-        _setupRole(MINTER_ROLE, minter);
-    }
+    constructor() ERC721("LazyNFT", "LAZ") EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION) {}
+
+    // constructor(address payable minter)
+    //     ERC721("LazyNFT", "LAZ")
+    //     EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION)
+    // {
+    //     _setupRole(MINTER_ROLE, minter);
+    // }
 
     // Notice: Represents an un-minted NFT, which has not yet been recorded into the blockchain. A signed voucher can be redeemed for a real NFT using the redeem function.
     struct NFTVoucher {
@@ -42,10 +45,10 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
         address signer = _verify(voucher);
 
         // make sure that the signer is authorized to mint NFTs
-        require(
-            hasRole(MINTER_ROLE, signer),
-            "Signature invalid or unauthorized"
-        );
+        // require(
+        //     hasRole(MINTER_ROLE, signer),
+        //     "Signature invalid or unauthorized"
+        // );
 
         // make sure that the redeemer is paying enough to cover the buyer's cost
         require(msg.value >= voucher.minPrice, "Insufficient funds to redeem");
@@ -65,10 +68,10 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
 
     // Notice: Transfers all pending withdrawal balance to the caller. Reverts if the caller is not an authorized minter.
     function withdraw() public {
-        require(
-            hasRole(MINTER_ROLE, msg.sender),
-            "Only authorized minters can withdraw"
-        );
+        // require(
+        //     hasRole(MINTER_ROLE, msg.sender),
+        //     "Only authorized minters can withdraw"
+        // );
 
         // IMPORTANT: casting msg.sender to a payable address is only safe if ALL members of the minter role are payable addresses.
         address payable receiver = payable(msg.sender);
