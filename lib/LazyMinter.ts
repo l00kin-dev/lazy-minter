@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const ethers = require('ethers')
 
 // These constants must match the ones used in the smart contract.

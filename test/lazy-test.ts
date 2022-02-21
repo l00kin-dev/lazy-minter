@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 const { expect } = require("chai");
 const hardhat = require("hardhat");
-const { ethers } = hardhat;
-const { LazyMinter } = require('../lib')
+import { ethers } from 'hardhat'
+const { LazyMinter } = require('../lib/LazyMinter')
 
 async function deploy() {
   const [minter, redeemer, _] = await ethers.getSigners()
