@@ -18,13 +18,6 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl, Ownable {
 
     constructor() ERC721("LazyNFT", "LAZ") EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION) {}
 
-    // constructor(address payable minter)
-    //     ERC721("LazyNFT", "LAZ")
-    //     EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION)
-    // {
-    //     _setupRole(MINTER_ROLE, minter);
-    // }
-
     // Notice: Represents an un-minted NFT, which has not yet been recorded into the blockchain. A signed voucher can be redeemed for a real NFT using the redeem function.
     struct NFTVoucher {
         uint256 tokenId;
@@ -44,12 +37,6 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl, Ownable {
         // make sure signature is valid and get the address of the signer
         address signer = _verify(voucher);
 
-        // make sure that the signer is authorized to mint NFTs
-        // require(
-        //     hasRole(MINTER_ROLE, signer),
-        //     "Signature invalid or unauthorized"
-        // );
-
         // make sure that the redeemer is paying enough to cover the buyer's cost
         require(msg.value >= voucher.minPrice, "Insufficient funds to redeem");
 
@@ -68,11 +55,6 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl, Ownable {
 
     // Notice: Transfers all pending withdrawal balance to the caller. Reverts if the caller is not an authorized minter.
     function withdraw() public {
-        // require(
-        //     hasRole(MINTER_ROLE, msg.sender),
-        //     "Only authorized minters can withdraw"
-        // );
-
         // IMPORTANT: casting msg.sender to a payable address is only safe if ALL members of the minter role are payable addresses.
         address payable receiver = payable(msg.sender);
 
